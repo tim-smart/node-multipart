@@ -1,4 +1,6 @@
 var Stream = require('stream').Stream
+  , fs     = require('fs')
+  , path   = require('path')
   , mime   = require('mime')
   , noop   = function () {}
   , mp
@@ -200,7 +202,7 @@ mp.writeFile = function writeFile (details, callback) {
   var file                      = details.file
     , headers                   = details.headers || {}
     , filename                  = details.filename
-    , header_keys, header_map, value, key, found
+    , header_keys, header_map, value, key, found, short_filename
 
   defaults(headers, { 'Content-Disposition' : ['file'] })
   header_map                    = headersToMap(headers)
@@ -211,6 +213,7 @@ mp.writeFile = function writeFile (details, callback) {
   if (filename) {
     key                         = header_map['content-disposition']
     value                       = headers[key]
+    short_filename              = path.basename(filename)
 
     if (Array.isArray(value)) {
       found                     = false
@@ -223,10 +226,10 @@ mp.writeFile = function writeFile (details, callback) {
       }
 
       if (!found) {
-        headers[key].push('filename="' + filename + '"')
+        headers[key].push('filename="' + short_filename + '"')
       }
     } else if (-1 === value.indexOf('filename')) {
-      headers[key]              = value + '; filename="' + filename + '"'
+      headers[key]              = value + '; filename="' + short_filename + '"'
     }
 
     // Content type
@@ -239,6 +242,11 @@ mp.writeFile = function writeFile (details, callback) {
     }
 
     key = value = undefined
+
+    if (!file) {
+      file = fs.createReadStream(filename)
+      file.pause()
+    }
   }
 
   header_map = header_keys = undefined

@@ -30,17 +30,9 @@ mp.write(
   }
 )
 
-file = fs.createReadStream('/tmp/js.js')
-file.pause()
-
-mp2.writeFile(
-  { filename : 'file.js'
-  , file     : file
-  }
-, function () {
-    console.log('FILEWRITTEN')
-  }
-)
+mp2.writeFile({ filename : '/tmp/js.js' }, function () {
+  console.log('FILEWRITTEN')
+})
 
 mp2.end(function () {
   console.log('DONE2')
