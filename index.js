@@ -75,6 +75,7 @@ function MultipartStream (options) {
   mps.mp_level         = 1
   mps.prefix           = options.prefix || 'NODEmpLEVEL'
   mps.boundary         = mps.prefix + mps.mp_level
+  mps._first_boundary  = true
   mps._done_boundary   = false
   mps._current_stream  = null
   mps.readable         = true
@@ -339,10 +340,17 @@ mp._writeBoundary = function _writeBoundary (prev) {
     return false
   }
 
+  var prefix = '\r\n--'
+
+  if (this._first_boundary) {
+    prefix = '--'
+    this._first_boundary = false
+  }
+
   if (!prev && this._ending && 0 >= this._queue.length) {
-    this._buffer.push('\r\n--' + this.boundary + '--')
+    this._buffer.push(prefix + this.boundary + '--')
   } else {
-    this._buffer.push('\r\n--' + this.boundary)
+    this._buffer.push(prefix + this.boundary)
   }
 
   this._done_boundary = true

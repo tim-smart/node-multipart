@@ -1,6 +1,6 @@
 { "name"          : "multipart"
 , "description"   : "A multipart stream for creating multipart bodies."
-, "version"       : "0.1.1"
+, "version"       : "0.1.2"
 , "dependencies"  :
   { "mime"        : "1.2.x"
   }
