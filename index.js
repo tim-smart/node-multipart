@@ -583,7 +583,7 @@ exports.createForm = function createForm (data, callback) {
 
   mp.on('end', function () {
     buf = buf.join('')
-    callback(null, buf)
+    callback(null, buf, mp)
   })
 
   mp.writeForm({ data : data })
