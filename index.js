@@ -452,7 +452,7 @@ mp._write = function _write (data) {
   }
 
   // Successfull write, even though it failed really.
-  if ('function' !== typeof data.resume) {
+  if (!data || 'function' !== typeof data.resume) {
     return mps._next(callback, new Error('Data was not a valid type'))
   }
 
