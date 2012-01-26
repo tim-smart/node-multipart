@@ -347,12 +347,7 @@ mp._writeBoundary = function _writeBoundary (prev) {
     this._first_boundary = false
   }
 
-  if (!prev && this._ending && 0 >= this._queue.length) {
-    this._buffer.push(prefix + this.boundary + '--')
-  } else {
-    this._buffer.push(prefix + this.boundary)
-  }
-
+  this._buffer.push(prefix + this.boundary)
   this._done_boundary = true
 }
 
@@ -445,7 +440,10 @@ mp._write = function _write (data) {
   }
 
   // Directly writable?
-  if ('string' === typeof data || Buffer.isBuffer(data)) {
+  if ( 'number' === typeof data
+    || 'string' === typeof data
+    || Buffer.isBuffer(data)
+     ) {
     mps._writeBoundary(true)
     mps._writeBuffer(makeHeaders(mps, headers))
     mps._writeBuffer(data)
@@ -518,6 +516,7 @@ mp._next = function _next (callback, error) {
     this.waiting = false
 
     if (this._ending) {
+      this._writeBuffer('--')
       this._flush()
       if ('function' === typeof this._ending) {
         this._ending.call(null, this)
@@ -566,4 +565,28 @@ mp.destroy = function destroy () {
   this._tick_flush = false
 
   return true
+}
+
+/**
+ * Utility to create some form data
+ *
+ * @param {Object} data
+ * @return {String}
+ */
+exports.createForm = function createForm (data, callback) {
+  var mp  = new MultipartStream()
+    , buf = []
+
+  mp.on('data', function (chunk) {
+    buf.push(chunk.toString())
+  })
+
+  mp.on('end', function () {
+    buf = buf.join('')
+    callback(null, buf)
+  })
+
+  mp.writeForm({ data : data })
+
+  mp.end()
 }
