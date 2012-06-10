@@ -3,8 +3,8 @@
 , "version"       : "0.1.5"
 , "homepage"      : "https://github.com/tim-smart/node-multipart/"
 , "repository"    :
-  { "type"        : "git",
-    "url":        : "git://github.com/tim-smart/node-multipart.git"
+  { "type"        : "git"
+  , "url":        : "git://github.com/tim-smart/node-multipart.git"
   }
 , "dependencies"  :
   { "mime"        : "1.2.x"
