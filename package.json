@@ -4,7 +4,7 @@
 , "homepage"      : "https://github.com/tim-smart/node-multipart/"
 , "repository"    :
   { "type"        : "git"
-  , "url":        : "git://github.com/tim-smart/node-multipart.git"
+  , "url"         : "git://github.com/tim-smart/node-multipart.git"
   }
 , "dependencies"  :
   { "mime"        : "1.2.x"

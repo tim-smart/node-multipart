@@ -1,13 +1,24 @@
-var multipart = require('../')
-  , fs        = require('fs')
-  , mp        = multipart.createMultipartStream()
-  , mp2       = multipart.createMultipartStream()
+var multipart     = require('../')
+  , fs            = require('fs')
+  , path          = require('path')
+  , assert        = require('assert').ok
+  , mp            = multipart.createMultipartStream()
+  , mp2           = multipart.createMultipartStream()
   , file
 
-console.log = function () {}
+// Comment for logging.
+console.log       = function () {}
 
-process.stdout.write('HEADERS\r\n\r\n')
-mp.pipe(process.stdout)
+var PROJECTDIR    = path.resolve(path.join(__dirname, '..'))
+
+var EXPECTED      = fs.readFileSync(
+      PROJECTDIR + '/test/fixtures/simple-expected.txt'
+    , 'utf8'
+    )
+var OUTPUTFILE    = PROJECTDIR + '/test/fixtures/simple.out'
+var OUTPUTSTREAM  = fs.createWriteStream(OUTPUTFILE)
+
+mp.pipe(OUTPUTSTREAM)
 
 mp.writeForm(
   { data    :
@@ -30,7 +41,7 @@ mp.write(
   }
 )
 
-mp2.writeFile({ filename : '/tmp/js.js' }, function () {
+mp2.writeFile({ filename : PROJECTDIR + '/test/fixtures/simple-file.txt' }, function () {
   console.log('FILEWRITTEN')
 })
 
@@ -40,4 +51,19 @@ mp2.end(function () {
 
 mp.end(function () {
   console.log('DONE')
+  // Assert the output is what we are expecting.
+  var output  = fs.readFileSync(OUTPUTFILE, 'utf8')
+  var error   = null
+
+  try {
+    assert(EXPECTED == output)
+  } catch (err) {
+    error = err
+  }
+
+  fs.unlink(OUTPUTFILE)
+
+  if (error) {
+    throw error
+  }
 })
